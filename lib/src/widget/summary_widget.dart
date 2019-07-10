@@ -91,13 +91,10 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
         end:  Offset(0, 0)
     ).animate(control)
       ..addListener((){
-        //  print('################# addListener ##################');
         setState(() {
-          //print('################# setState ##################');
           offset = animation.value;
         });
       })..addStatusListener((status){
-        print('################# $status ##################');
         if(status == AnimationStatus.completed)
           controller.stop();
       });
@@ -110,8 +107,6 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
   }
 
   void _playAnimation()  {
-   // print('################# _playAnimation ##################');
-
     _startAnimation();
   }
 
@@ -122,12 +117,9 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
   @override
   Widget build(BuildContext context) {
 
-    //print('################# build ##################');
-
     if(widget.bloc.startLeftColumnAnimation){
       _playAnimation();
     }
-
 
     return ListView.builder(
           itemCount: 7,
@@ -141,9 +133,6 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
   }
 
   Widget _titleListTile(BuildContext context, int index, JokerBloc bloc){
-
-    var x = widget.bloc.startLeftColumnAnimation;
-    var y = widget.bloc.getLeftColumn();
 
     if(widget.bloc.getLeftColumn() < 3) {
       return _getNormalTile(index, true);
@@ -173,34 +162,6 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
         return _getNormalTile(index, false);
       }
     }
-
-
-   /* if(widget.bloc.startLeftColumnAnimation){
-      return _getAnimatedTile(index);
-    } else if(widget.bloc.getLeftColumn() == 0){
-      return _getNormalTile(index, true);
-    } else {
-      return _getNormalTile(index, true);
-    }*/
-
-      /*return Container(
-      width: 50,
-      height: 100,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(5.0),),
-        image: DecorationImage(image: _getImage(),fit: BoxFit.contain,),
-      ),
-      alignment: _alignment,
-      child:  FractionalTranslation(
-        //translation: widget.bloc.startLeftColumnAnimation? animation.value: offset,
-        translation: index < 4 ? animation.value : index < 7 ? animation.value : animation.value,
-        //translation: animation1.value,
-        child: Opacity(
-          opacity: (widget.bloc.startLeftColumnAnimation) && index < widget.bloc.getLeftColumn() ? 1.0: 0.0,
-          child: Image.asset('images/joker-pb.png'),
-        ),
-      )
-    );*/
   }
 
 
