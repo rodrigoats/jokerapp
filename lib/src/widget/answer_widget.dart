@@ -4,9 +4,6 @@ import '../blocs/joker_bloc.dart';
 import '../model/question.dart';
 import '../model/models.dart';
 
-const questionsLeading = ['A','B','C','D'];
-const boxHeight = 72.0;
-
 class AnswerWidget extends StatefulWidget {
 
   const AnswerWidget({this.question, this.bloc,this.answerAnimation, this.isJokerEnd});
@@ -25,7 +22,6 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
 
   bool isCorrect = false;
 
-  final Map<int, Animation<double>> animations = {};
   AnimationController controller;
   Animation<Color> colorAnimation;
   Animation<Color> colorAnimationCorrect;
@@ -142,7 +138,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
         ]
     ).animate(controller);
 
-    await controller.forward().orCancel;
+    await controller.forward();
     
   }
 

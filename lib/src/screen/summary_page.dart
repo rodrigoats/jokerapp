@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:frideos/frideos.dart';
 import '../widget/summary_widget.dart';
+import '../model/appState.dart';
 
 
 var landing = [
@@ -17,8 +18,18 @@ var landing = [
 class SummaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final bloc = AppStateProvider.of<AppState>(context).bloc;
 
-    return SummaryWidget();
+    return Scaffold(
+      body: ColumnLeftWidget(bloc: bloc,),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.flight),
+          onPressed: () {
+          print('Pressed');
+          bloc.startLeftColumnAnimation = !bloc.startLeftColumnAnimation;
+          }
+      )
+    );
 
   }
 

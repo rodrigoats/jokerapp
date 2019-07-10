@@ -3,6 +3,7 @@ import 'package:frideos/frideos.dart';
 
 import '../model/appState.dart';
 import '../widget/question-widget.dart';
+import '../widget/summary_widget.dart';
 import '../model/models.dart';
 import '../model/question.dart';
 import '../blocs/joker_bloc.dart';
@@ -45,14 +46,12 @@ class JokerMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return FadeInWidget(
-      duration: 750,
-      child: Container(
+    return Container(
         child: Row(
           children: <Widget>[
             Expanded(
               flex: 2,
-              child: _listViewLeft(context,bloc),
+              child: ColumnLeftWidget(bloc: bloc,)//_listViewLeft(context,bloc),
             ),
             Expanded(
               flex: 6,
@@ -64,8 +63,7 @@ class JokerMain extends StatelessWidget {
             )
           ],
         ),
-      ),
-    );
+      );
   }
 
 
@@ -114,7 +112,6 @@ class JokerMain extends StatelessWidget {
     return ListView.builder(
         itemCount: 7,
         itemExtent: 45,
-        padding: EdgeInsets.all(10),
         itemBuilder: (context, index){
           return ListTile(
            title: bloc.getRightColumn() == index ? _itemAnimatedListRight(landing,landingPb,index, true): _itemAnimatedListRight(landing,landingPb,index, false),

@@ -45,6 +45,9 @@ class JokerBloc {
   int countdown; // Milliseconds
   Timer timer;
 
+  //START ANIMATIONS
+  bool startLeftColumnAnimation = false;
+
   void _startJoker(List<Question> data){
     index = 0;
     triviaState.value.questionIndex = 1;
@@ -87,6 +90,7 @@ class JokerBloc {
 
   void notAnswered(Question question) {
     print('--------------notAnswered--------------------');
+    startLeftColumnAnimation = true;
     stats.addWrong();
   }
 
@@ -94,8 +98,10 @@ class JokerBloc {
     if(!triviaState.value.isTriviaEnd) {
       question.chosenAnswerIndex =  question.answers.indexOf(answer);
       if(question.isCorrect(answer)) {
+        startLeftColumnAnimation = false;
         stats.addCorrect();
       } else {
+        startLeftColumnAnimation = true;
         stats.addWrong();
       }
       timer.cancel();

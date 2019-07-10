@@ -32,7 +32,6 @@ class QuestionWidget extends StatelessWidget {
               triviaState: triviaState,
               duration: bloc.countdown,
               width: MediaQuery.of(context).size.width/1.8),
-              //_squaresAnswers(context,bloc),
           Expanded(
             child: ValueBuilder(
                 streamed: bloc.answersAnimation,

@@ -3,40 +3,47 @@ import 'package:frideos/frideos.dart';
 import '../model/appState.dart';
 import '../blocs/joker_bloc.dart';
 
-class SummaryWidget  extends StatefulWidget{
+class ColumnLeftWidget  extends StatefulWidget {
+
+  const ColumnLeftWidget({Key key, this.bloc}) : super(key: key);
+
+  final JokerBloc bloc;
 
    @override
-  _SummaryWidget createState() => _SummaryWidget();
-
-
-
+   _ColumnLeftWidget createState() => _ColumnLeftWidget();
 }
 
-class _SummaryWidget extends State<SummaryWidget> with TickerProviderStateMixin{
+class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderStateMixin {
+
 
   Animation<Offset> animation;
-  AnimationController controller;
+  Animation<Offset> animation1;
+  Animation<Offset> animation2;
 
-  final List<String> landing = [
-    'images/cinquentamil.png',
-    'images/dezmil.png',
-    'images/tresmil.png',
-    'images/mil.png',
-    'images/quinhentos.png',
-    'images/duzentos.png',
-    'images/zero.png',
-  ];
+  AnimationController controller;
+  AnimationController controller1;
+  AnimationController controller2;
+
+  var offset = Offset(0,-1);
 
   @override
   void initState() {
+    print('################# initState ##################');
+
     super.initState();
-    controller = AnimationController(duration: Duration(milliseconds: 10000),vsync: this);
+    controller = AnimationController(duration: Duration(milliseconds: 5000),vsync: this,);
+    controller1 = AnimationController(duration: Duration(milliseconds: 5000),vsync: this,);
+    controller2 = AnimationController(duration: Duration(milliseconds: 5000),vsync: this,);
+    _initAnimation();
+    _initAnimation();
     _initAnimation();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _initAnimation();
+    _initAnimation();
     _initAnimation();
   }
 
@@ -46,64 +53,188 @@ class _SummaryWidget extends State<SummaryWidget> with TickerProviderStateMixin{
     super.dispose();
   }
 
-  void _initAnimation(){
-    animation = Tween<Offset>(
-      begin: Offset(10,10),
-      end: Offset(10,10),
-    ).animate(controller);
+  void _initAnimation() async {
+    animation = _getOffsetAnimation(controller);
+    animation1 = _getOffsetAnimation(controller1);
+    animation2 = _getOffsetAnimation(controller2);
   }
 
-  void _startAnimation() async{
+  Animation<Offset> _getOffsetAnimation(AnimationController cont){
 
+    return  Tween<Offset>(
+        begin: Offset(0, -1),
+        end:  Offset(0, 0)
+    ).animate(cont);
+  }
+
+
+  void _startAnimation() {
+
+     if(widget.bloc.getLeftColumn() < 3) {
+     return;
+   } else if(widget.bloc.getLeftColumn()<6){
+     _addColumnAnimation(animation,controller);
+     controller.forward();
+   } else if(widget.bloc.getLeftColumn()<7){
+     _addColumnAnimation(animation1,controller1);
+     controller1.forward();
+   } else {
+     _addColumnAnimation(animation2,controller2);
+     controller2.forward();
+   }
+
+  }
+
+  void _addColumnAnimation(Animation<Offset> animation, AnimationController control){
     animation = Tween<Offset>(
-      begin: const Offset(0.0, 0.0),
-      end: const Offset(0.0, 0.9),
-    ).animate(controller);
-
-    await controller.forward().orCancel;
+        begin: Offset(0, -1),
+        end:  Offset(0, 0)
+    ).animate(control)
+      ..addListener((){
+        //  print('################# addListener ##################');
+        setState(() {
+          //print('################# setState ##################');
+          offset = animation.value;
+        });
+      })..addStatusListener((status){
+        print('################# $status ##################');
+        if(status == AnimationStatus.completed)
+          controller.stop();
+      });
 
   }
 
   @override
-  void didUpdateWidget(SummaryWidget oldWidget) {
+  void didUpdateWidget(ColumnLeftWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
   }
 
-  void _playAnimation() async {
-    await _startAnimation;
+  void _playAnimation()  {
+   // print('################# _playAnimation ##################');
 
+    _startAnimation();
   }
+
+  var _alignment = Alignment.topCenter;
+  var top = FractionalOffset.topCenter;
+  var bottom = FractionalOffset.bottomCenter;
 
   @override
   Widget build(BuildContext context) {
 
-    final appState = AppStateProvider.of<AppState>(context);
-    JokerBloc bloc = appState.bloc;
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              GestureDetector(
-                child: IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: _playAnimation),
-              )
-            ],
+    //print('################# build ##################');
 
-          ), Column(
-            children: <Widget>[
-                FractionalTranslation(
-                translation: Offset(0.0, 0.9),
-                  child: Image.asset(
-                    landing[bloc.getRightColumn()],
-                    width: 200,
-                    height: 200,
-                  ),
-                )
-            ],
-          )
-        ],
-      ),
-    );
+    if(widget.bloc.startLeftColumnAnimation){
+      _playAnimation();
+    }
 
+
+    return ListView.builder(
+          itemCount: 7,
+          itemExtent: 45,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: _titleListTile(context,index, null)
+            );
+          }
+      );
   }
+
+  Widget _titleListTile(BuildContext context, int index, JokerBloc bloc){
+
+    var x = widget.bloc.startLeftColumnAnimation;
+    var y = widget.bloc.getLeftColumn();
+
+    if(widget.bloc.getLeftColumn() < 3) {
+      return _getNormalTile(index, true);
+    } else if(widget.bloc.getLeftColumn() < 6) {
+      if(index < widget.bloc.getLeftColumn()) {
+        if(widget.bloc.startLeftColumnAnimation){
+          return _getAnimatedTile(index,animation);
+        }
+        return _getNormalTile(index, false);
+      } else {
+        return _getNormalTile(index, true);
+      }
+    } else if(widget.bloc.getLeftColumn() < 7) {
+      if(index < 3){
+        return _getNormalTile(index, false);
+      } else if(widget.bloc.startLeftColumnAnimation && index < 6){
+        return _getAnimatedTile(index,animation1);
+      } else {
+        return _getNormalTile(index, true);
+      }
+    } else {
+      if(index < 6){
+        return _getNormalTile(index, false);
+      } else if(widget.bloc.startLeftColumnAnimation){
+        return _getAnimatedTile(index, animation2);
+      } else {
+        return _getNormalTile(index, false);
+      }
+    }
+
+
+   /* if(widget.bloc.startLeftColumnAnimation){
+      return _getAnimatedTile(index);
+    } else if(widget.bloc.getLeftColumn() == 0){
+      return _getNormalTile(index, true);
+    } else {
+      return _getNormalTile(index, true);
+    }*/
+
+      /*return Container(
+      width: 50,
+      height: 100,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(5.0),),
+        image: DecorationImage(image: _getImage(),fit: BoxFit.contain,),
+      ),
+      alignment: _alignment,
+      child:  FractionalTranslation(
+        //translation: widget.bloc.startLeftColumnAnimation? animation.value: offset,
+        translation: index < 4 ? animation.value : index < 7 ? animation.value : animation.value,
+        //translation: animation1.value,
+        child: Opacity(
+          opacity: (widget.bloc.startLeftColumnAnimation) && index < widget.bloc.getLeftColumn() ? 1.0: 0.0,
+          child: Image.asset('images/joker-pb.png'),
+        ),
+      )
+    );*/
+  }
+
+
+  Widget _getNormalTile(int index, bool joker) {
+    return Container(
+        width: 50,
+        height: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5.0),),
+          image: DecorationImage(image: ExactAssetImage(joker ? 'images/joker.png': 'images/joker-pb.png'),fit: BoxFit.contain,),
+        ),
+        alignment: _alignment,
+    );
+  }
+
+  Widget _getAnimatedTile(int index, Animation<Offset> animez) {
+    return Container(
+        width: 50,
+        height: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5.0),),
+          image: DecorationImage(image: ExactAssetImage('images/joker.png'),fit: BoxFit.contain,),
+        ),
+        alignment: _alignment,
+        child:  FractionalTranslation(
+          translation: animez.value,
+          child: Opacity(
+            opacity: 1.0,
+            //opacity: (widget.bloc.startLeftColumnAnimation) && index < widget.bloc.getLeftColumn() ? 1.0: 0.0,
+            child: Image.asset('images/joker-pb.png'),
+          ),
+        )
+    );
+  }
+
+
 }

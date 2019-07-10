@@ -130,9 +130,8 @@ class AppState extends AppStateModel{
 
   void startTrivia(){
     print('START TRIVIA');
-    //_loadQuestions();
-    //_changeTab = AppTab.joker;
-    _changeTab = AppTab.summary;
+    _loadQuestions();
+    _changeTab = AppTab.joker;
   }
 
   void endTrivia() => tabController.value = AppTab.summary;
