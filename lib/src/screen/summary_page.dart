@@ -26,7 +26,7 @@ class SummaryPage extends StatelessWidget {
         child: Icon(Icons.flight),
           onPressed: () {
           print('Pressed');
-          bloc.startLeftColumnAnimation = !bloc.startLeftColumnAnimation;
+         // bloc.startLeftColumnAnimation = !bloc.startLeftColumnAnimation;
           }
       )
     );

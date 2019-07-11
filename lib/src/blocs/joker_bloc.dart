@@ -132,10 +132,11 @@ class JokerBloc {
 
     stopTimer();
 
-    /*Timer(Duration(milliseconds: 1000), () {
+   /* Timer(Duration(milliseconds: 3000), () {
       _nextQuestion();
     });*/
-   answersAnimation.value.chosenAnswerIndex =
+
+    answersAnimation.value.chosenAnswerIndex =
         currentQuestion.value.answers.indexOf(answer);
     answersAnimation.refresh();
   }
@@ -143,7 +144,6 @@ class JokerBloc {
   void onChosenAnswerAnimationEnd(){
     triviaState.value.isAnswerChosen = false;
     triviaState.refresh();
-
     checkAnswer(currentQuestion.value,chosenAnswer);
   }
 
@@ -166,6 +166,3 @@ class JokerBloc {
     tabController.dispose();
   }
 }
-
-
-

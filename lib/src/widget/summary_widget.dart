@@ -162,6 +162,7 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
         return _getNormalTile(index, false);
       }
     }
+
   }
 
 

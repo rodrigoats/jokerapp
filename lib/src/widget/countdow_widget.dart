@@ -76,7 +76,6 @@ class CountdownWidgetState extends State<CountdownWidget> with SingleTickerProvi
              color: color,
            ),
          )
-
        ],
      );
   }
