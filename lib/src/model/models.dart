@@ -10,8 +10,10 @@ class TriviaState{
 }
 
 class AnswerAnimation{
-  AnswerAnimation({this.chosenAnswerIndex,this.startPlaying});
+  AnswerAnimation({this.chosenAnswerIndex,this.startPlaying, this.startPlayingHero});
   
   int chosenAnswerIndex;
   bool startPlaying = false;
+  bool startPlayingHero = false;
+
 }

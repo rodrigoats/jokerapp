@@ -70,6 +70,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
     var newColor;
 
     _checkCorrectAnswer();
+    controller.reset();
 
     if(isCorrect) {
       newColor = Colors.green;
@@ -136,18 +137,17 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
         )
         ]
     ).animate(controller)..addListener((){
-      setState(() {
-
-      });
+      setState(() {});
     })..addStatusListener((status){
       if(status == AnimationStatus.completed && widget.bloc.triviaState.value.isAnswerChosen){
-        widget.bloc.onChosenAnswerAnimationEnd();
+        if(!isCorrect){
+          widget.bloc.onChosenAnswerAnimationEnd();
+        }
         controller.reset();
       }
     });
 
     await controller.forward();
-
   }
 
   @override
@@ -157,6 +157,11 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
 
   void _playAnimation(String answer) async {
     widget.bloc.onChosenAnswer(answer);
+    widget.bloc.answered = true;
+    if(widget.question.isCorrect(widget.bloc.chosenAnswer)){
+      widget.bloc.answersAnimation.value.startPlaying = true;
+    }
+
     await _startAnimation();
   }
 
@@ -182,7 +187,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
                             border: Border.all(color: Colors.white),
                             borderRadius: BorderRadius.all(Radius.circular(5.0)),
                             gradient: LinearGradient(
-                              colors: _getColor(index++),//[(0 == widget.answerAnimation.chosenAnswerIndex) ? colorAnimation.value : (0 == widget.question.correctAnswerIndex) ? colorAnimationCorrect.value : answerBoxColor, Colors.blue],
+                              colors: _getColor(index++),
                             ),
                         ),
                         child:Text(widget.question.answers[0],style: TextStyle(color: Colors.white,fontFamily: 'Roboto',fontSize: 16),textAlign: TextAlign.center, ),
@@ -190,7 +195,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
                     ],
                   ),
                   onTap: () {
-                    if(!widget.isJokerEnd){
+                    if(!widget.isJokerEnd && !widget.bloc.answered){
                       _playAnimation(widget.question.answers[0]);
                     }
                   },
@@ -206,7 +211,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
                             border: Border.all(color: Colors.white),
                             borderRadius: BorderRadius.all(Radius.circular(5.0),),
                             gradient: LinearGradient(
-                              colors: _getColor(index++),//[(1 == widget.answerAnimation.chosenAnswerIndex) ? colorAnimation.value : (1 == widget.question.correctAnswerIndex) ? colorAnimationCorrect.value : answerBoxColor, Colors.blue],
+                              colors: _getColor(index++),
                             ),
                         ),
                         child:Text(widget.question.answers[1],style: TextStyle(color: Colors.white,fontFamily: 'Roboto',fontSize: 16),textAlign: TextAlign.center,),
@@ -214,7 +219,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
                     ],
                   ),
                   onTap: () {
-                    if(!widget.isJokerEnd){
+                    if(!widget.isJokerEnd && !widget.bloc.answered){
                       _playAnimation(widget.question.answers[1]);
                     }
                   },
@@ -235,7 +240,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
                             border: Border.all(color: Colors.white),
                             borderRadius: BorderRadius.all(Radius.circular(5.0)),
                             gradient: LinearGradient(
-                              colors: _getColor(index++),//[(2 == widget.answerAnimation.chosenAnswerIndex) ? colorAnimation.value : (2 == widget.question.correctAnswerIndex) ? colorAnimationCorrect.value : answerBoxColor, Colors.blue],
+                              colors: _getColor(index++),
                             ),
                         ),
                         child:Text(widget.question.answers[2],style: TextStyle(color: Colors.white,fontFamily: 'Roboto',fontSize: 16),textAlign: TextAlign.center,),
@@ -243,7 +248,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
                     ],
                   ),
                   onTap: () {
-                    if(!widget.isJokerEnd){
+                    if(!widget.isJokerEnd && !widget.bloc.answered){
                       _playAnimation(widget.question.answers[2]);
                     }
                   },
@@ -257,7 +262,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
                           margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
                           decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                  colors: _getColor(index),//[(3 == widget.answerAnimation.chosenAnswerIndex) ? colorAnimation.value : (3 == widget.question.correctAnswerIndex) ? colorAnimationCorrect.value : answerBoxColor, Colors.blue],
+                                  colors: _getColor(index),
                               ),
                               border: Border.all(color: Colors.white),
                               borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -267,7 +272,7 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
                     ],
                   ),
                   onTap: () {
-                    if(!widget.isJokerEnd){
+                    if(!widget.isJokerEnd && !widget.bloc.answered){
                       _playAnimation(widget.question.answers[3]);
                     }
                   },
@@ -277,15 +282,14 @@ class _AnswerWidgetState extends State<AnswerWidget> with TickerProviderStateMix
           ],
         ),
       );
-    }
+  }
 
-    List<Color> _getColor(int index){
-        if(index == widget.answerAnimation.chosenAnswerIndex)
-          return [colorAnimation.value, Colors.blue];
-        if(index == widget.question.correctAnswerIndex)
-          return [colorAnimationCorrect.value, Colors.blue];
-
-        return [answerBoxColor, Colors.blue];;
-    }
+  List<Color> _getColor(int index){
+    if(index == widget.answerAnimation.chosenAnswerIndex)
+      return [colorAnimation.value, Colors.blue];
+    if(index == widget.question.correctAnswerIndex)
+      return [colorAnimationCorrect.value, Colors.blue];
+    return [answerBoxColor, Colors.blue];
+  }
 
 }

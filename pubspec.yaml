@@ -44,6 +44,7 @@ flutter:
   uses-material-design: true
   assets:
     - images/joker.png
+    - images/card.png
     - images/joker-pb.png
     - images/zero.png
     - images/zero-pb.png

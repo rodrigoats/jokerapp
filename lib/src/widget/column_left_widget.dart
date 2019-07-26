@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frideos/frideos.dart';
-import '../model/appState.dart';
 import '../blocs/joker_bloc.dart';
 
 class ColumnLeftWidget  extends StatefulWidget {
@@ -28,22 +26,16 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
 
   @override
   void initState() {
-    print('################# initState ##################');
-
     super.initState();
     controller = AnimationController(duration: Duration(milliseconds: 5000),vsync: this,);
     controller1 = AnimationController(duration: Duration(milliseconds: 5000),vsync: this,);
     controller2 = AnimationController(duration: Duration(milliseconds: 5000),vsync: this,);
-    _initAnimation();
-    _initAnimation();
     _initAnimation();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _initAnimation();
-    _initAnimation();
     _initAnimation();
   }
 
@@ -69,20 +61,18 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
 
 
   void _startAnimation() {
-
-     if(widget.bloc.getLeftColumn() < 3) {
-     return;
-   } else if(widget.bloc.getLeftColumn()<6){
+    if(widget.bloc.getLeftColumn() < 3) {
+      return;
+    } else if(widget.bloc.getLeftColumn()<6){
      _addColumnAnimation(animation,controller);
      controller.forward();
-   } else if(widget.bloc.getLeftColumn()<7){
+    } else if(widget.bloc.getLeftColumn()<7){
      _addColumnAnimation(animation1,controller1);
      controller1.forward();
-   } else {
+    } else {
      _addColumnAnimation(animation2,controller2);
      controller2.forward();
-   }
-
+    }
   }
 
   void _addColumnAnimation(Animation<Offset> animation, AnimationController control){
@@ -151,6 +141,9 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
       } else if(widget.bloc.startLeftColumnAnimation && index < 6){
         return _getAnimatedTile(index,animation1);
       } else {
+        if(!widget.bloc.startLeftColumnAnimation && index < 6){
+          return _getNormalTile(index, false);
+        }
         return _getNormalTile(index, true);
       }
     } else {
@@ -162,7 +155,6 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
         return _getNormalTile(index, false);
       }
     }
-
   }
 
 
@@ -191,7 +183,6 @@ class _ColumnLeftWidget extends State<ColumnLeftWidget> with TickerProviderState
           translation: animez.value,
           child: Opacity(
             opacity: 1.0,
-            //opacity: (widget.bloc.startLeftColumnAnimation) && index < widget.bloc.getLeftColumn() ? 1.0: 0.0,
             child: Image.asset('images/joker-pb.png'),
           ),
         )

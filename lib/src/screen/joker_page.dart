@@ -3,10 +3,11 @@ import 'package:frideos/frideos.dart';
 
 import '../model/appState.dart';
 import '../widget/question-widget.dart';
-import '../widget/summary_widget.dart';
+import '../widget/column_left_widget.dart';
+import '../widget/column_right_widget.dart';
 import '../model/models.dart';
 import '../model/question.dart';
-import '../blocs/joker_bloc.dart';
+
 
 
 class JokerPage extends StatelessWidget {
@@ -59,74 +60,10 @@ class JokerMain extends StatelessWidget {
             ),
             Expanded(
               flex: 2,
-              child: _listViewRight(context,bloc),
+              child: ColumnRightWidget(bloc: bloc),//_listViewRight(context,bloc),
             )
           ],
         ),
       );
   }
-
-
-  Widget _listViewLeft(BuildContext ctx, JokerBloc bloc) {
-
-    return ListView.builder(
-        itemCount: 7,
-        itemExtent: 45,
-        padding: EdgeInsets.all(10),
-        itemBuilder: (context, index){
-          return ListTile(
-              title:  index < bloc.getLeftColumn() ? _itemListAnimatedLeft(false): _itemListAnimatedLeft(true),
-          );
-        });
-  }
-
-  Widget _itemListAnimatedLeft(bool first) {
-    return AnimatedCrossFade(
-      firstChild: Image.asset('images/joker.png'),
-      secondChild: Image.asset('images/joker-pb.png'),
-      crossFadeState: first ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-      duration: Duration(milliseconds: 1000),
-    );
-  }
-
-  Widget _listViewRight(BuildContext ctx, JokerBloc bloc) {
-    var landingPb = [
-      'images/cinquentamil-pb.png',
-      'images/dezmil-pb.png',
-      'images/tresmil-pb.png',
-      'images/mil-pb.png',
-      'images/quinhentos-pb.png',
-      'images/duzentos-pb.png',
-      'images/zero-pb.png',
-    ];
-    var landing = [
-      'images/cinquentamil.png',
-      'images/dezmil.png',
-      'images/tresmil.png',
-      'images/mil.png',
-      'images/quinhentos.png',
-      'images/duzentos.png',
-      'images/zero.png',
-    ];
-
-    return ListView.builder(
-        itemCount: 7,
-        itemExtent: 45,
-        itemBuilder: (context, index){
-          return ListTile(
-           title: bloc.getRightColumn() == index ? _itemAnimatedListRight(landing,landingPb,index, true): _itemAnimatedListRight(landing,landingPb,index, false),
-            //title: _itemAnimatedListRight(landing,landingPb,index, true),
-          );
-        });
-  }
-
-  Widget _itemAnimatedListRight(var landing, var landingPb, int index, bool first) {
-    return AnimatedCrossFade(
-      firstChild: Image.asset(landing[index]),
-      secondChild: Image.asset(landingPb[index]),
-      crossFadeState: first ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-      duration: Duration(milliseconds: 1000),
-    );
-  }
-
 }

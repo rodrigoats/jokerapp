@@ -24,7 +24,6 @@ class JokerBloc {
     });
   }
 
-
   // STREAMS
   final StreamedValue<AppTab> tabController;
   final triviaState = StreamedValue<TriviaState>(initialData: TriviaState());
@@ -33,17 +32,22 @@ class JokerBloc {
   final currentTime = StreamedValue<int>(initialData: 0);
   final countdownBar = StreamedValue<double>();
   final answersAnimation = StreamedValue<AnswerAnimation>(
-      initialData: AnswerAnimation(chosenAnswerIndex: 0, startPlaying: false));
+      initialData: AnswerAnimation(chosenAnswerIndex: 0, startPlaying: false, startPlayingHero: false));
+
+
 
   // QUESTIONS, ANSWERS, STATS
   int index = 0;
   String chosenAnswer;
+  bool answered = false;
   JokerStats stats = new JokerStats(leftColumn: 0,rightColumn: 6);
+
 
   // TIMER, COUNTDOWN
   final StreamedTransformed<String, String> countdownStream;
   int countdown; // Milliseconds
   Timer timer;
+  double dilation = 1.0;
 
   //START ANIMATIONS
   bool startLeftColumnAnimation = false;
@@ -98,6 +102,7 @@ class JokerBloc {
     if(!triviaState.value.isTriviaEnd) {
       question.chosenAnswerIndex =  question.answers.indexOf(answer);
       if(question.isCorrect(answer)) {
+        answersAnimation.value.startPlayingHero = true;
         startLeftColumnAnimation = false;
         stats.addCorrect();
       } else {
@@ -110,7 +115,9 @@ class JokerBloc {
     }
   }
   void _nextQuestion(){
+    dilation = 1.0;
     index++;
+    answered = false;
     print('-------------- _nextQuestion: $index --------------------');
     if(index < questions.length) {
       triviaState.value.questionIndex++;
