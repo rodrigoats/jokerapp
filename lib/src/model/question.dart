@@ -1,3 +1,6 @@
+import 'dart:convert' as convert;
+
+
 enum QuestionDifficult {easy, medium, hard}
 
 enum QuestionType {boolean, multiple}
@@ -5,18 +8,19 @@ enum QuestionType {boolean, multiple}
 class QuestionModel{
   QuestionModel({this.question,this.correctAnswer,this.incorrectAnswers});
 
-  factory QuestionModel.fromJson(Map<String, dynamic> json) {
-
-    return QuestionModel(
-      question: json['question'],
-      correctAnswer: json['correct_answer'],
-      incorrectAnswers: (json['incorrect_answers'] as List)
-          .map((answer) =>  answer.toString()).toList()
-    );
-  }
   String question;
   String correctAnswer;
   List<String> incorrectAnswers;
+
+
+  factory QuestionModel.fromJson(Map<String, dynamic> json) {
+    return QuestionModel(
+      question: convert.utf8.decode(convert.base64Url.decode(json['question'])),
+      correctAnswer: convert.utf8.decode(convert.base64Url.decode(json['correct_answer'])),
+      incorrectAnswers: (json['incorrect_answers'] as List)
+          .map((answer) =>  convert.utf8.decode(convert.base64Url.decode(answer.toString()))).toList()
+    );
+  }
 }
 
 class Question {
@@ -24,6 +28,7 @@ class Question {
   Question({this.question,this.answers,this.correctAnswerIndex});
 
   factory Question.fromQuestionModel(QuestionModel model){
+
 
     final List<String> answers = []
       ..add(model.correctAnswer)
@@ -46,4 +51,6 @@ class Question {
   bool isChoosed(String answer){
     return answers.indexOf(answer) == chosenAnswerIndex;
   }
+
+
 }

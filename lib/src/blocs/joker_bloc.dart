@@ -5,6 +5,7 @@ import 'package:frideos_core/frideos_core.dart';
 import '../model/models.dart';
 import '../model/question.dart';
 import '../model/jokerStats.dart';
+import '../API/trivia_api.dart';
 
 
 const refreshTime = 100;
@@ -20,7 +21,7 @@ class JokerBloc {
     });
 
     countdownStream.outTransformed.listen((data){
-      countdown = int.parse(data)*1000;
+      countdown = int.parse(data)*2500;
     });
   }
 
@@ -34,14 +35,11 @@ class JokerBloc {
   final answersAnimation = StreamedValue<AnswerAnimation>(
       initialData: AnswerAnimation(chosenAnswerIndex: 0, startPlaying: false, startPlayingHero: false));
 
-
-
   // QUESTIONS, ANSWERS, STATS
   int index = 0;
   String chosenAnswer;
   bool answered = false;
   JokerStats stats = new JokerStats(leftColumn: 0,rightColumn: 6);
-
 
   // TIMER, COUNTDOWN
   final StreamedTransformed<String, String> countdownStream;
@@ -62,7 +60,6 @@ class JokerBloc {
     Timer(Duration(milliseconds: 1000), () {
       triviaState.value.isTriviaPlaying = true;
       currentQuestion.value = data[index];
-
       playJoker();
     });
   }
@@ -121,7 +118,7 @@ class JokerBloc {
     print('-------------- _nextQuestion: $index --------------------');
     if(index < questions.length) {
       triviaState.value.questionIndex++;
-      currentQuestion.value = questions.value[index];
+      currentQuestion.value = _getCurrentQuestion();
       playJoker();
     } else {
       _endJoker();
@@ -138,10 +135,6 @@ class JokerBloc {
     currentQuestion.value.chosenAnswerIndex = currentQuestion.value.answers.indexOf(answer);
 
     stopTimer();
-
-   /* Timer(Duration(milliseconds: 3000), () {
-      _nextQuestion();
-    });*/
 
     answersAnimation.value.chosenAnswerIndex =
         currentQuestion.value.answers.indexOf(answer);
@@ -160,6 +153,20 @@ class JokerBloc {
 
   int getLeftColumn(){
     return stats.leftColumn;
+  }
+
+  Question _getCurrentQuestion(){
+    final TriviaAPI api = new TriviaAPI();
+    QuestionDifficult difficult;
+    if(getRightColumn() > 2) {
+      difficult = QuestionDifficult.easy;
+    } else if(getRightColumn() > 0){
+      difficult = QuestionDifficult.medium;
+    } else {
+      difficult = QuestionDifficult.hard;
+    }
+    //api.getQuestions(difficulty: difficult,number: 1, type: QuestionType.multiple, questions: questions);
+    return questions.value[index];
   }
 
   void dispose() {

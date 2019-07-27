@@ -6,6 +6,7 @@ import 'package:frideos_core/frideos_core.dart';
 import '../model/theme.dart';
 import '../API/api_interface.dart';
 import '../API/mock_api.dart';
+import '../API/trivia_api.dart';
 import '../model/question.dart';
 import '../blocs/joker_bloc.dart';
 import '../model/models.dart';
@@ -38,7 +39,8 @@ class AppState extends AppStateModel{
   final currentTheme = StreamedValue<MyTheme>();
 
   //API
-  final QuestionAPI api = MockAPI();
+  final QuestionAPI mockapi = MockAPI();
+  final QuestionAPI api = TriviaAPI();
   final apiType = StreamedValue<ApiType>(initialData: ApiType.mock);
 
   //Tabs
@@ -131,9 +133,7 @@ class AppState extends AppStateModel{
   void startTrivia(){
     print('START TRIVIA');
     _loadQuestions();
-    //ESSE AQUI E O CORRETO
     _changeTab = AppTab.joker;
-    //_changeTab = AppTab.summary;
   }
 
   void endTrivia() => tabController.value = AppTab.summary;
