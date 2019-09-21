@@ -8,6 +8,7 @@ import '../API/api_interface.dart';
 import '../API/mock_api.dart';
 import '../API/trivia_api.dart';
 import '../model/question.dart';
+import '../model/category.dart';
 import '../blocs/joker_bloc.dart';
 import '../model/models.dart';
 
@@ -25,6 +26,8 @@ class AppState extends AppStateModel{
     questionsAmount.value = 12.toString();
     questionsAmount.setTransformer(validateAmount);
 
+    _loadCategories();
+
     bloc = JokerBloc(countdownStream: countdown,questions: questions, tabController: tabController);
 
   }
@@ -37,6 +40,10 @@ class AppState extends AppStateModel{
   //Theme
   final themes = List<MyTheme>();
   final currentTheme = StreamedValue<MyTheme>();
+
+  //Categories
+  final categoriesStream = StreamedList<Category>();
+  final categoryChosen = StreamedValue<Category>();
 
   //API
   final QuestionAPI mockapi = MockAPI();
@@ -80,6 +87,8 @@ class AppState extends AppStateModel{
     }
   });
 
+  void setCategory(Category category) => categoryChosen.value = category;
+
   @override
   Future<void> init() async {
     final String lastTheme = await Prefs.getPref('appTheme');
@@ -97,6 +106,13 @@ class AppState extends AppStateModel{
       difficulty: questionsDifficulty.value,
       type: QuestionType.multiple
     );
+  }
+
+  Future _loadCategories() async {
+    final isLoaded = await api.getCategories(categoriesStream);
+    if (isLoaded) {
+      categoryChosen.value = categoriesStream.value.last;
+    }
   }
 
   void setDifficulty(QuestionDifficult difficulty) => questionsDifficulty.value = difficulty;
@@ -139,6 +155,8 @@ class AppState extends AppStateModel{
   void endTrivia() => tabController.value = AppTab.summary;
 
   void showSummary() => tabController.value = AppTab.summary;
+
+  void showCategories() => tabController.value = AppTab.categories;
 
   @override
   void dispose() {

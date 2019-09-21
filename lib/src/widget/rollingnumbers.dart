@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import '../blocs/joker_bloc.dart';
 
 
@@ -26,7 +25,7 @@ class RollingNumbersSate extends State<RollingNumbers> with SingleTickerProvider
         vsync: this,
         duration: Duration(milliseconds: 300)
     );
-    animation = Tween<double>(begin: 0, end: widget.value)
+    animation = Tween<double>(begin: widget.bloc.getPrize().toDouble(), end: widget.value)
         .animate(controller)..addListener((){
           setState(() {});
     })..addStatusListener((status){

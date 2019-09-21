@@ -7,6 +7,7 @@ class JokerStats{
 
   int rightColumn;
   int leftColumn;
+  final prize = [50000,10000,3000,1000,500,200,0];
   int losts = 3;
   void addCorrect(){
     rightColumn--;
@@ -25,6 +26,12 @@ class JokerStats{
     }
     print('rightColumn: $rightColumn');
     _verify();
+  }
+
+  int getPrize(){
+    print('$prize');
+    print('$rightColumn');
+    return prize[rightColumn];
   }
 
   void _verify(){

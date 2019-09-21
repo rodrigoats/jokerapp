@@ -6,6 +6,7 @@ import 'model/models.dart';
 import 'screen/main_page.dart';
 import 'screen/joker_page.dart';
 import 'screen/summary_page.dart';
+import 'screen/categories.dart';
 
 
 
@@ -20,13 +21,17 @@ class HomePage extends StatelessWidget {
 
       switch(tab) {
         case AppTab.main:
+          //return MainPage();
           return MainPage();
           break;
         case AppTab.joker:
           return JokerPage();
           break;
+        case AppTab.categories:
+          return CategoriesPage();
+          break;
         case AppTab.summary:
-          return SummaryPage();
+          return SummaryPage(bloc: appState.bloc,);
           break;
 
         default:

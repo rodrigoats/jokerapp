@@ -37,6 +37,7 @@ class JokerBloc {
 
   // QUESTIONS, ANSWERS, STATS
   int index = 0;
+  int totalQuestions = 2;
   String chosenAnswer;
   bool answered = false;
   JokerStats stats = new JokerStats(leftColumn: 0,rightColumn: 6);
@@ -50,20 +51,25 @@ class JokerBloc {
   //START ANIMATIONS
   bool startLeftColumnAnimation = false;
 
+  final TriviaAPI api = new TriviaAPI();
+
   void _startJoker(List<Question> data){
+    print('--------------_startJoker--------------------');
     index = 0;
     triviaState.value.questionIndex = 1;
     triviaState.value.isTriviaEnd = false;
     stats.reset();
-    currentQuestion.value = data.first;
+    Question firstQuestion = _getNextQuestion();
+    currentQuestion.value = firstQuestion;
 
     Timer(Duration(milliseconds: 1000), () {
       triviaState.value.isTriviaPlaying = true;
-      currentQuestion.value = data[index];
+      currentQuestion.value = firstQuestion;
       playJoker();
     });
   }
   void playJoker() {
+    print('--------------playJoker--------------------');
     timer = Timer.periodic(Duration(milliseconds: refreshTime), (Timer t){
       currentTime.value = refreshTime * t.tick;
       if(currentTime.value > countdown) {
@@ -82,7 +88,7 @@ class JokerBloc {
     triviaState.refresh();
     stopTimer();
 
-    Timer(Duration(milliseconds: 1500),(){
+    Timer(Duration(milliseconds: 1000),(){
       triviaState.value.isAnswerChosen = false;
       tabController.value = AppTab.summary;
       currentQuestion.value = null;
@@ -116,9 +122,12 @@ class JokerBloc {
     index++;
     answered = false;
     print('-------------- _nextQuestion: $index --------------------');
-    if(index < questions.length) {
+    print(questions.value.length);
+    _loadMoreQuestions();
+    if(index < totalQuestions) {
       triviaState.value.questionIndex++;
-      currentQuestion.value = _getCurrentQuestion();
+      currentQuestion.value = _getNextQuestion();//questions.value[index];
+      print(currentQuestion.value.difficulty);
       playJoker();
     } else {
       _endJoker();
@@ -155,18 +164,56 @@ class JokerBloc {
     return stats.leftColumn;
   }
 
-  Question _getCurrentQuestion(){
-    final TriviaAPI api = new TriviaAPI();
-    QuestionDifficult difficult;
+  int getPrize(){
+    return stats.getPrize();
+  }
+
+  Question _getNextQuestion(){
+    Question q;
+    questions.value.shuffle();
+    q = questions.value.firstWhere((question)=>(question.difficulty == _getCurrentDifficulty()));
+    questions.value.remove(q);
+    return q;
+  }
+
+  String _getCurrentDifficulty(){
+    print(getRightColumn());
     if(getRightColumn() > 2) {
-      difficult = QuestionDifficult.easy;
+      return 'easy';
     } else if(getRightColumn() > 0){
-      difficult = QuestionDifficult.medium;
+      return 'medium';
     } else {
-      difficult = QuestionDifficult.hard;
+      return 'hard';
     }
-    //api.getQuestions(difficulty: difficult,number: 1, type: QuestionType.multiple, questions: questions);
-    return questions.value[index];
+  }
+
+  QuestionDifficult _getQuestionDifficult(String difficulty) {
+    var qDifficult;
+    switch(difficulty){
+      case 'easy':
+        qDifficult = QuestionDifficult.easy;
+        break;
+      case 'medium':
+        qDifficult = QuestionDifficult.medium;
+        break;
+      case 'hard':
+        qDifficult = QuestionDifficult.hard;
+        break;
+      default:
+        qDifficult = QuestionDifficult.medium;
+        break;
+    }
+    print(qDifficult);
+    return qDifficult;
+  }
+
+  void _loadMoreQuestions(){
+    api.getQuestions(
+        difficulty: _getQuestionDifficult(_getCurrentDifficulty()),
+        number: 12,
+        type: QuestionType.multiple,
+        questions: questions
+    );
   }
 
   void dispose() {

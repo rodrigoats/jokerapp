@@ -4,6 +4,7 @@ import 'dart:convert' as convert;
 
 import 'package:frideos_core/frideos_core.dart';
 import 'package:http/http.dart' as http;
+import 'package:jocker_app/src/model/category.dart';
 
 import '../model/question.dart';
 import 'api_interface.dart';
@@ -31,8 +32,12 @@ class TriviaAPI implements QuestionAPI{
         break;
     }
 
-
-    final url = 'https://opentdb.com/api.php?amount=$number&difficulty=$qDifficult&type=$qType&encode=base64';
+    String url;
+    if(questions.value == null){
+      url = 'https://opentdb.com/api.php?amount=$number&type=$qType&encode=base64';
+    } else {
+      url = 'https://opentdb.com/api.php?amount=$number&difficulty=$qDifficult&type=$qType&encode=base64';
+    }
 
     final response = await http.get(url);
 
@@ -41,14 +46,40 @@ class TriviaAPI implements QuestionAPI{
       final result = (jsonResponse['results'] as List)
           .map((question)=>QuestionModel.fromJson(question)).toList();
 
-      questions.value = result
+      var questionsResult = result
           .map((question)=>Question.fromQuestionModel(question)).toList();
+      if(questions.value == null){
+        questions.value = questionsResult;
+      } else {
+        questions.value.addAll(questionsResult);
+      }
+
     } else {
       print('Request failed with status: ${response.statusCode}.');
       return false;
     }
 
     return true;
+  }
+
+  @override
+  Future<bool> getCategories(StreamedList<Category> categories) async{
+    const categoriesURL = 'https://opentdb.com/api_category.php';
+    final response = await http.get(categoriesURL);
+    if(response.statusCode == 200){
+      final jsonResponse = convert.jsonDecode(response.body);
+      final result = (jsonResponse['trivia_categories'] as List)
+          .map((category)=>Category.fromJson(category));
+      categories.value = [];
+      categories
+        ..addAll(result)
+        ..addElement(Category(0, 'Any Category'));
+      return true;
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+      return false;
+    }
+
   }
 
 }
