@@ -10,6 +10,7 @@ import '../API/trivia_api.dart';
 import '../model/question.dart';
 import '../model/category.dart';
 import '../blocs/joker_bloc.dart';
+import '../blocs/settings_bloc.dart';
 import '../model/models.dart';
 
 
@@ -28,6 +29,7 @@ class AppState extends AppStateModel{
 
     _loadCategories();
 
+    print(categoryChosen.value);
     bloc = JokerBloc(countdownStream: countdown,questions: questions, tabController: tabController);
 
   }
@@ -104,7 +106,8 @@ class AppState extends AppStateModel{
       questions: questions,
       number: int.parse(questionsAmount.value),
       difficulty: questionsDifficulty.value,
-      type: QuestionType.multiple
+      idCategory: categoryChosen.value.id,
+      type: QuestionType.multiple,
     );
   }
 
@@ -112,7 +115,13 @@ class AppState extends AppStateModel{
     final isLoaded = await api.getCategories(categoriesStream);
     if (isLoaded) {
       categoryChosen.value = categoriesStream.value.last;
+      bloc.idCategory = categoryChosen.value.id;
     }
+  }
+
+  void chooseCategory(Category category){
+    categoryChosen.value = category;
+    bloc.idCategory = categoryChosen.value.id;
   }
 
   void setDifficulty(QuestionDifficult difficulty) => questionsDifficulty.value = difficulty;

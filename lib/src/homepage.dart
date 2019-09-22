@@ -6,7 +6,7 @@ import 'model/models.dart';
 import 'screen/main_page.dart';
 import 'screen/joker_page.dart';
 import 'screen/summary_page.dart';
-import 'screen/categories.dart';
+import 'screen/categories_page.dart';
 
 
 

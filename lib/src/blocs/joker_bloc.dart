@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:frideos_core/frideos_core.dart';
+import 'package:jocker_app/src/model/category.dart';
 
 import '../model/models.dart';
 import '../model/question.dart';
@@ -12,7 +13,7 @@ const refreshTime = 100;
 
 class JokerBloc {
   
-  JokerBloc({this.countdownStream,this.questions,this.tabController}){
+  JokerBloc({this.countdownStream,this.questions,this.idCategory,this.tabController}){
     questions.onChange((data) {
       if(data.isNotEmpty){
         final questions = data..shuffle();
@@ -29,6 +30,7 @@ class JokerBloc {
   final StreamedValue<AppTab> tabController;
   final triviaState = StreamedValue<TriviaState>(initialData: TriviaState());
   final StreamedList<Question> questions;
+  int idCategory;
   final currentQuestion = StreamedValue<Question>();
   final currentTime = StreamedValue<int>(initialData: 0);
   final countdownBar = StreamedValue<double>();
@@ -37,7 +39,7 @@ class JokerBloc {
 
   // QUESTIONS, ANSWERS, STATS
   int index = 0;
-  int totalQuestions = 2;
+  int totalQuestions = 12;
   String chosenAnswer;
   bool answered = false;
   JokerStats stats = new JokerStats(leftColumn: 0,rightColumn: 6);
@@ -212,9 +214,12 @@ class JokerBloc {
         difficulty: _getQuestionDifficult(_getCurrentDifficulty()),
         number: 12,
         type: QuestionType.multiple,
+        idCategory: idCategory,
         questions: questions
     );
   }
+
+
 
   void dispose() {
     answersAnimation.dispose();

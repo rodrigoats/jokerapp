@@ -12,7 +12,7 @@ import 'api_interface.dart';
 
 class TriviaAPI implements QuestionAPI{
   @override
-  Future<bool> getQuestions({StreamedList<Question> questions, int number, QuestionDifficult difficulty, QuestionType type}) async{
+  Future<bool> getQuestions({StreamedList<Question> questions, int number, QuestionDifficult difficulty, int idCategory,QuestionType type}) async{
 
     var qDifficult;
     var qType = 'multiple';
@@ -34,10 +34,17 @@ class TriviaAPI implements QuestionAPI{
 
     String url;
     if(questions.value == null){
-      url = 'https://opentdb.com/api.php?amount=$number&type=$qType&encode=base64';
+      url = 'https://opentdb.com/api.php?amount=$number&difficulty=easy&type=$qType&encode=base64';
     } else {
       url = 'https://opentdb.com/api.php?amount=$number&difficulty=$qDifficult&type=$qType&encode=base64';
     }
+
+    if(idCategory != null && idCategory > 0){
+      url = url + '&category='+ idCategory.toString();
+    }
+
+    print(idCategory);
+    print(url);
 
     final response = await http.get(url);
 

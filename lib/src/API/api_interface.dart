@@ -10,6 +10,7 @@ abstract class QuestionAPI{
     StreamedList<Question> questions,
     int number,
     QuestionDifficult difficulty,
+    int idCategory,
     QuestionType type,
   });
 }
